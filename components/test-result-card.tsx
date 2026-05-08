@@ -69,8 +69,8 @@ export function TestResultCard({
         </div>
       </div>
 
-      {expanded && (
-        <div className="mt-3 pt-3 border-t border-[#2a2a2a] space-y-2">
+      {isExpandable && (
+        <div className={`mt-3 pt-3 border-t border-[#2a2a2a] space-y-2 ${expanded ? '' : 'hidden print:block'}`}>
           {detail && (
             <div>
               <p className="text-xs text-[#71717a] font-mono mb-1">Detail</p>

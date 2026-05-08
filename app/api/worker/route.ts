@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { calculateScore } from '@/lib/score'
+import { sendAuditReport } from '@/lib/email'
 
 interface WorkerResult {
   checkId: string
@@ -85,6 +86,23 @@ export async function POST(req: NextRequest) {
         })
       )
     )
+
+    // Fire-and-forget email if user is logged in
+    if (process.env.RESEND_API_KEY && process.env.RESEND_API_KEY !== 're_...') {
+      const auditWithUser = await prisma.audit.findUnique({
+        where: { id: auditId },
+        include: { user: { select: { email: true } } },
+      })
+      if (auditWithUser?.user?.email) {
+        sendAuditReport({
+          to: auditWithUser.user.email,
+          url: auditWithUser.url,
+          auditId,
+          score,
+          results,
+        }).catch(console.error)
+      }
+    }
 
     return NextResponse.json({ ok: true, score })
   } catch (err) {

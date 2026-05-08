@@ -34,3 +34,10 @@ body {
 ::-webkit-scrollbar-track { background: #0a0a0a; }
 ::-webkit-scrollbar-thumb { background: #2a2a2a; border-radius: 3px; }
 ::-webkit-scrollbar-thumb:hover { background: #3a3a3a; }
+
+@media print {
+  * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  nav, .no-print { display: none !important; }
+  body { background: #0a0a0a; }
+  @page { margin: 1.5cm; }
+}

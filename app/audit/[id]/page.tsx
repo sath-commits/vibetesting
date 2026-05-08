@@ -158,7 +158,15 @@ export default function AuditPage() {
             <div className="flex flex-col items-center gap-6 py-8">
               <p className="font-mono text-sm text-[#71717a]">{formatUrl(audit.url)}</p>
               <VibeScore score={audit.score} animate />
-              <ShareCard auditId={audit.id} url={audit.url} score={audit.score} />
+              <div className="no-print">
+                <ShareCard auditId={audit.id} url={audit.url} score={audit.score} />
+              </div>
+              <button
+                onClick={() => window.print()}
+                className="no-print text-xs text-[#71717a] border border-[#1f1f1f] px-4 py-2 rounded-lg hover:border-[#2a2a2a] hover:text-[#fafafa] transition-colors font-mono"
+              >
+                Download PDF
+              </button>
             </div>
 
             {/* Stack detected */}
@@ -186,7 +194,7 @@ export default function AuditPage() {
                   All results
                   <span className="ml-2 font-mono text-xs text-[#71717a]">({filteredResults.length})</span>
                 </h2>
-                <div className="flex flex-wrap gap-2">
+                <div className="no-print flex flex-wrap gap-2">
                   {(['ALL', 'FAIL', 'WARN', 'PASS', 'SKIP'] as FilterStatus[]).map((s) => (
                     <button
                       key={s}
@@ -204,7 +212,7 @@ export default function AuditPage() {
               </div>
 
               {categories.length > 1 && (
-                <div className="flex flex-wrap gap-2 mb-4">
+                <div className="no-print flex flex-wrap gap-2 mb-4">
                   {(['ALL', ...categories] as string[]).map((cat) => (
                     <button
                       key={cat}
@@ -242,7 +250,7 @@ export default function AuditPage() {
               </div>
             </div>
 
-            <div className="text-center py-8 border-t border-[#1f1f1f]">
+            <div className="no-print text-center py-8 border-t border-[#1f1f1f]">
               <p className="text-sm text-[#71717a] mb-3">Missing a check?</p>
               <Link href="/suggest" className="text-[#22c55e] text-sm hover:underline">
                 Suggest a failure mode →
