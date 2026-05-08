@@ -1,0 +1,109 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id               String              @id @default(cuid())
+  email            String              @unique
+  name             String?
+  plan             Plan                @default(FREE)
+  stripeCustomerId String?
+  createdAt        DateTime            @default(now())
+  audits           Audit[]
+  suggestions      FailureSuggestion[]
+}
+
+model Audit {
+  id          String       @id @default(cuid())
+  url         String
+  status      AuditStatus  @default(QUEUED)
+  score       Int?
+  userId      String?
+  user        User?        @relation(fields: [userId], references: [id])
+  results     TestResult[]
+  createdAt   DateTime     @default(now())
+  completedAt DateTime?
+  stack       String[]
+  isPublic    Boolean      @default(true)
+}
+
+model TestResult {
+  id            String     @id @default(cuid())
+  auditId       String
+  audit         Audit      @relation(fields: [auditId], references: [id])
+  checkId       String
+  category      String
+  status        TestStatus
+  message       String?
+  detail        String?
+  severity      Severity
+  fixSuggestion String?
+  duration      Int?
+  createdAt     DateTime   @default(now())
+}
+
+model Check {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  category    String
+  name        String
+  description String
+  severity    Severity
+  stacks      String[]
+  isActive    Boolean  @default(true)
+  failCount   Int      @default(0)
+  passCount   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model FailureSuggestion {
+  id          String           @id @default(cuid())
+  userId      String?
+  user        User?            @relation(fields: [userId], references: [id])
+  title       String
+  description String
+  category    String
+  status      SuggestionStatus @default(PENDING)
+  createdAt   DateTime         @default(now())
+}
+
+enum Plan {
+  FREE
+  STARTER
+  PRO
+}
+
+enum AuditStatus {
+  QUEUED
+  RUNNING
+  COMPLETE
+  FAILED
+}
+
+enum TestStatus {
+  PASS
+  FAIL
+  WARN
+  SKIP
+  ERROR
+}
+
+enum Severity {
+  CRITICAL
+  HIGH
+  MEDIUM
+  LOW
+}
+
+enum SuggestionStatus {
+  PENDING
+  REVIEWING
+  ACCEPTED
+  REJECTED
+}
